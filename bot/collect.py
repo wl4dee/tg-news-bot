@@ -61,6 +61,66 @@ def _fresh_enough(published: datetime | None) -> bool:
     return now() - published < timedelta(hours=MAX_AGE_HOURS)
 
 
+_TINY_IMAGE_RE = re.compile(r"/(1x1|pixel|spacer|blank)\.|width=1&|/badge/", re.I)
+
+# Заглушки, які видання підставляють, коли ілюстрації до статті немає.
+# Взяти їх — гірше, ніж не брати нічого: у каналі буде однакова картинка
+# під різними новинами. «Суспільне», наприклад, віддає images/default.jpg.
+_PLACEHOLDER_RE = re.compile(
+    r"/(default|placeholder|no[-_]?image|noimage|share|og[-_]image|logo|stub)"
+    r"[-_.\d]*\.(jpe?g|png|webp)$",
+    re.I,
+)
+
+
+def _looks_like_photo(url: str) -> bool:
+    """Відсіяти лічильники, заглушки й те, чого Telegram не візьме."""
+    if not url or not url.startswith("http"):
+        return False
+    if _TINY_IMAGE_RE.search(url) or _PLACEHOLDER_RE.search(url.split("?")[0]):
+        return False
+    # Власний CDN Telegram закритий для сторонніх завантажень: sendPhoto по
+    # такому URL стабільно віддає «failed to get HTTP URL content». Тому фото
+    # з ТГ-каналів не використовуємо взагалі — перевірено на живих посиланнях.
+    if "telesco.pe" in url or "cdn-telegram.org" in url:
+        return False
+    # SVG Telegram як фото не приймає.
+    return not url.lower().split("?")[0].endswith(".svg")
+
+
+def _entry_image(entry, summary_html: str) -> str:
+    """Знайти ілюстрацію до запису RSS.
+
+    Видання кладуть її в чотири різні місця, і жодне не є стандартом де-факто,
+    тому перебираємо по черзі. Малі картинки відсіюємо: Telegram однаково
+    відмовиться слати трекінговий піксель, а пост через це втратить фото.
+    """
+    for media in (entry.get("media_content") or []) + (entry.get("media_thumbnail") or []):
+        url = media.get("url", "")
+        try:
+            if int(media.get("width") or 0) and int(media["width"]) < 200:
+                continue
+        except (TypeError, ValueError):
+            pass
+        if _looks_like_photo(url):
+            return url
+
+    for enc in entry.get("enclosures") or []:
+        if str(enc.get("type", "")).startswith("image/") and _looks_like_photo(enc.get("href", "")):
+            return enc["href"]
+
+    for link in entry.get("links") or []:
+        if str(link.get("type", "")).startswith("image/") and _looks_like_photo(link.get("href", "")):
+            return link["href"]
+
+    if "<img" in summary_html:
+        img = BeautifulSoup(summary_html, "html.parser").find("img")
+        if img and _looks_like_photo(img.get("src", "")):
+            return img["src"]
+
+    return ""
+
+
 def _entry_datetime(entry) -> datetime | None:
     for field in ("published_parsed", "updated_parsed"):
         parsed = entry.get(field)
@@ -118,6 +178,14 @@ def fetch_telegram(session: requests.Session, source: dict) -> list[dict]:
                 outbound = href
                 break
 
+        photo = ""
+        wrap = block.select_one(".tgme_widget_message_photo_wrap")
+        if wrap:
+            style = wrap.get("style", "")
+            match = re.search(r"background-image:\s*url\('([^']+)'\)", style)
+            if match and _looks_like_photo(match.group(1)):
+                photo = match.group(1)
+
         post_id = block.get("data-post", f"{channel}/?")
         items.append({
             "title": headline(text),
@@ -126,6 +194,7 @@ def fetch_telegram(session: requests.Session, source: dict) -> list[dict]:
             "origin": f"https://t.me/{post_id}",
             "rubric": source["rubric"],
             "weight": source["weight"],
+            "image": photo,
             "source_type": "tg",
             "source": channel,
             "published_at": published.isoformat() if published else "",
@@ -156,7 +225,8 @@ def fetch_rss(session: requests.Session, source: dict) -> list[dict]:
         if not _fresh_enough(published):
             continue
 
-        summary = (entry.get("summary") or entry.get("description") or "").strip()
+        raw_summary = (entry.get("summary") or entry.get("description") or "").strip()
+        summary = raw_summary
         if "<" in summary:
             # Проганяємо через парсер лише те, де справді є теги. Інакше
             # BeautifulSoup сипле MarkupResemblesLocatorWarning на короткі
@@ -171,6 +241,7 @@ def fetch_rss(session: requests.Session, source: dict) -> list[dict]:
             "origin": link,
             "rubric": source["rubric"],
             "weight": source["weight"],
+            "image": _entry_image(entry, raw_summary),
             "source_type": "rss",
             "source": parsed.feed.get("title", url)[:80],
             "published_at": published.isoformat() if published else "",

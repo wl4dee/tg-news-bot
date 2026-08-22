@@ -285,7 +285,8 @@ def run() -> int:
         if index:
             time.sleep(publish.DRAFT_PAUSE_SEC)
 
-        message_id = tg.send_draft(draft_id, post["text"], meta)
+        image = post.get("_item", {}).get("image", "")
+        message_id = tg.send_draft(draft_id, post["text"], meta, image)
         if message_id is None:
             # Пост готовий, витрачений виклик моделі — а Telegram його не взяв.
             # Знімаємо позначку «бачений», щоб айтем повернувся наступного
@@ -314,8 +315,8 @@ def run() -> int:
             # Потрібне, щоб кнопка «Переписати» мала що переписувати.
             "raw_item": {
                 k: source_item.get(k, "")
-                for k in ("title", "text", "url", "origin", "rubric",
-                          "weight", "source_type", "source", "published_at")
+                for k in ("title", "text", "url", "origin", "rubric", "weight",
+                          "image", "source_type", "source", "published_at")
             },
         }
         if kv is not None and not kv.put(f"draft:{draft_id}", card):

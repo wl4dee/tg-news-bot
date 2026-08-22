@@ -25,6 +25,10 @@ API = "https://api.telegram.org/bot{token}/{method}"
 # Пауза між чернетками: ліміт групи ~20 повідомлень/хв.
 DRAFT_PAUSE_SEC = 3.0
 
+# Підпис під фото обмежений жорсткіше за звичайне повідомлення: 1024 проти 4096.
+# Через це довгий пост іде текстом навіть за наявності картинки.
+CAPTION_LIMIT = 1024
+
 # Рівно ті теги, які розуміє Telegram. Усе інше — 400 can't parse entities.
 ALLOWED_TAGS = {
     "b", "strong", "i", "em", "u", "ins", "s", "strike", "del",
@@ -174,8 +178,14 @@ class Telegram:
         )
         return True
 
-    def send_draft(self, draft_id: str, text: str, meta: str) -> int | None:
-        """Чернетка в групу з трьома кнопками. Повертає message_id або None."""
+    def send_draft(self, draft_id: str, text: str, meta: str,
+                   image: str = "") -> int | None:
+        """Чернетка в групу з трьома кнопками. Повертає message_id або None.
+
+        З фото йде як sendPhoto із підписом, без фото — як sendMessage.
+        `copyMessage` у воркері копіює обидва види однаково, тож публікація
+        в канал від цього не залежить.
+        """
         keyboard = {
             "inline_keyboard": [[
                 {"text": "✅ Опублікувати", "callback_data": f"p:{draft_id}"},
@@ -183,16 +193,35 @@ class Telegram:
                 {"text": "❌ Відхилити", "callback_data": f"x:{draft_id}"},
             ]]
         }
+        with_photo = bool(image) and len(text) <= CAPTION_LIMIT
 
         if DRY_RUN:
             print("\n" + "─" * 72)
             print(f"  [DRY_RUN] чернетка {draft_id} → чат {self.drafts_chat_id}")
             print(f"  {meta}")
+            print(f"  фото: {image[:80] if with_photo else '—'}"
+                  + ("" if with_photo or not image
+                     else f"  (є, але текст {len(text)} > {CAPTION_LIMIT})"))
             print("─" * 72)
             print(text)
             print("─" * 72)
             print("  кнопки: ✅ p:%s | ✏️ r:%s | ❌ x:%s" % (draft_id, draft_id, draft_id))
             return -1
+
+        if with_photo:
+            result = self._call("sendPhoto", {
+                "chat_id": self.drafts_chat_id,
+                "photo": image,
+                "caption": text,
+                "parse_mode": "HTML",
+                "reply_markup": keyboard,
+            })
+            if result:
+                return result.get("message_id")
+            # Telegram тягне картинку сам і відмовляє з десятка причин: 404,
+            # редирект, hotlink-захист, завеликий файл. Втрачати через це
+            # готовий пост безглуздо — шлемо текстом.
+            log.warning("фото не прийнялось, надсилаю чернетку %s без нього", draft_id)
 
         result = self._call("sendMessage", {
             "chat_id": self.drafts_chat_id,
