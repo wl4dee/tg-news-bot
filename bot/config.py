@@ -22,7 +22,7 @@ _load_dotenv()
 DRY_RUN = os.environ.get("DRY_RUN", "").strip() not in ("", "0", "false", "False")
 
 # Дефолти, які МОЖНА тримати в коді: це не конфіг редакції, а параметри механіки.
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash")
 GEMINI_PAUSE_SEC = float(os.environ.get("GEMINI_PAUSE_SEC", "7"))
 # 0 — мислення вимкнене (так треба для Flash: інакше воно з'їдає ліміт вихідних
 # токенів і модель повертає порожню відповідь). -1 — не передавати поле взагалі,

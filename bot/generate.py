@@ -32,7 +32,11 @@ MAX_OUTPUT_TOKENS = 4096
 
 _FENCE_RE = re.compile(r"^\s*```(?:json)?\s*|\s*```\s*$", re.IGNORECASE)
 
-REQUIRED_ON_PUBLISH = ("score", "story_key", "rubric", "text", "source_url")
+# Рубрику сюди свідомо НЕ включено: вона вже відома з config/sources.txt,
+# бо задана поруч із джерелом. Якщо модель її поверне — приймаємо (буває, що
+# новина з крипто-джерела насправді про ринки), якщо ні — беремо з айтема.
+# Вимагати її від моделі означало б відкидати цілком нормальні пости.
+REQUIRED_ON_PUBLISH = ("score", "story_key", "text", "source_url")
 
 
 def build_prompt(prompt_doc: str, item: dict, recent: list[dict],
@@ -82,6 +86,29 @@ def build_prompt(prompt_doc: str, item: dict, recent: list[dict],
         "Без ``` і без пояснень.",
     ]
     return "\n".join(parts)
+
+
+# Окремий маркер, а не None: None означає «цей айтем не вийшов, беремо наступний»,
+# а тут іти далі безглуздо — квота скінчилась для всього прогону.
+DAILY_QUOTA_EXHAUSTED = "\x00DAILY_QUOTA"
+
+
+def _daily_quota_limit(resp) -> str | None:
+    """Якщо 429 — саме про денну квоту, повернути її значення рядком.
+
+    Google кладе його в details[].violations[].quotaId виду
+    «GenerateRequestsPerDayPerProjectPerModel-FreeTier». Дістаємо звідти ще й
+    сам ліміт: інакше його ніяк не дізнатись, крім як упертись у нього.
+    """
+    try:
+        details = resp.json().get("error", {}).get("details", [])
+    except ValueError:
+        return None
+    for detail in details:
+        for violation in detail.get("violations", []) or []:
+            if "PerDay" in str(violation.get("quotaId", "")):
+                return str(violation.get("quotaValue", "невідомо"))
+    return None
 
 
 def _call_api(api_key: str, prompt: str) -> str | None:
@@ -144,11 +171,44 @@ def _call_api(api_key: str, prompt: str) -> str | None:
                 )
                 return None
 
-        if resp.status_code == 429 or resp.status_code >= 500:
+        if resp.status_code == 429:
+            # Денна і хвилинна квоти — різні речі. Хвилинну можна перечекати,
+            # денну — ні: до півночі за тихоокеанським часом нічого не зміниться.
+            # Без цієї гілки прогін витрачав по 70 с на айтем на марні ретраї.
+            limit = _daily_quota_limit(resp)
+            if limit is not None:
+                log.error(
+                    "Gemini: вичерпано ДЕННУ квоту безкоштовного тарифу "
+                    "(%s запитів на добу для моделі %s). Генерацію зупинено — "
+                    "ретраї тут не допоможуть. Або зменш _candidates у "
+                    "config/sources.txt і частоту крону, або візьми іншу модель "
+                    "через GEMINI_MODEL.", limit, GEMINI_MODEL,
+                )
+                return DAILY_QUOTA_EXHAUSTED
+            wait = 2 ** attempt * 5
+            log.warning("Gemini: 429 (хвилинний ліміт), чекаємо %d с (спроба %d/%d)",
+                        wait, attempt, MAX_ATTEMPTS)
+            time.sleep(wait)
+            continue
+
+        if resp.status_code >= 500:
             wait = 2 ** attempt * 5
             log.warning("Gemini: HTTP %s, чекаємо %d с (спроба %d/%d)",
                         resp.status_code, wait, attempt, MAX_ATTEMPTS)
             time.sleep(wait)
+            continue
+
+        # Не всі моделі приймають thinkingBudget=0: Flash приймає, а, скажімо,
+        # gemini-3.6-flash відповідає на це 400 «invalid argument». Один раз
+        # пробуємо те саме без поля мислення — інакше зміна моделі мовчки
+        # вбиває весь прогін, а виглядає це як «модель нічого не пропускає».
+        if (resp.status_code == 400
+                and "thinkingConfig" in payload["generationConfig"]):
+            log.warning(
+                "Gemini: модель %s не приймає thinkingConfig — повторюю без нього",
+                GEMINI_MODEL,
+            )
+            payload["generationConfig"].pop("thinkingConfig")
             continue
 
         # 400/403 — це не тимчасове: кривий ключ, вимкнений API, неправильна модель.
@@ -222,9 +282,21 @@ def generate(prompt_doc: str, items: list[dict], recent: list[dict]) -> list[dic
 
         log.info("[%d/%d] %s | %s", index, len(items),
                  item.get("rubric", "?"), item.get("title", "")[:70])
+        # Позначку ставимо ДО виклику: якщо модель відмовила чи зіпсувала JSON,
+        # повторювати той самий айтем наступного прогону немає сенсу. А от
+        # айтеми після зупинки по квоті лишаються непозначеними й повернуться.
+        item["_processed"] = True
 
         prompt = build_prompt(prompt_doc, item, recent, item.get("is_retry", False))
         raw = _call_api(api_key, prompt)
+
+        if raw is DAILY_QUOTA_EXHAUSTED:
+            # Решту айтемів навіть не пробуємо: вони підуть у наступний прогін,
+            # бо в seen[] потрапляють ті самі кандидати, а не оброблені.
+            log.warning("оброблено %d із %d айтемів до вичерпання денної квоти",
+                        index - 1, len(items))
+            break
+
         if raw is None:
             broken += 1
             continue
@@ -236,6 +308,12 @@ def generate(prompt_doc: str, items: list[dict], recent: list[dict]) -> list[dic
         if not parsed.get("publish"):
             refused += 1
             continue
+
+        # Рубрика з джерела — основна; модель може її перекрити, якщо новина
+        # насправді про інше. Порожню або невідому рубрику не беремо: за нею
+        # рахуються ліміти, і чужа назва обійшла б баланс рубрик.
+        if not parsed.get("rubric"):
+            parsed["rubric"] = item.get("rubric", "")
 
         parsed["_item"] = item
         results.append(parsed)

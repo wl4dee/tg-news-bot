@@ -157,7 +157,10 @@ def fetch_rss(session: requests.Session, source: dict) -> list[dict]:
             continue
 
         summary = (entry.get("summary") or entry.get("description") or "").strip()
-        if summary:
+        if "<" in summary:
+            # Проганяємо через парсер лише те, де справді є теги. Інакше
+            # BeautifulSoup сипле MarkupResemblesLocatorWarning на короткі
+            # описи, схожі на шлях чи URL, і засмічує лог прогону.
             summary = BeautifulSoup(summary, "html.parser").get_text(" ", strip=True)
 
         link = entry.get("link") or ""

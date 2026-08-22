@@ -213,10 +213,18 @@ def run() -> int:
     kv = None
     retries: list[dict] = []
     if have_kv:
-        kv = kvmod.KV()
-        kv.resolve_namespace(cached=current.get("kv_namespace_id", ""))
-        current["kv_namespace_id"] = kv.namespace_id
-        retries = kvmod.drain(kv, current)
+        try:
+            kv = kvmod.KV()
+            kv.resolve_namespace(cached=current.get("kv_namespace_id", ""))
+            current["kv_namespace_id"] = kv.namespace_id
+            retries = kvmod.drain(kv, current)
+        except ConfigError:
+            # У бойовому прогоні без KV немає сенсу — падаємо. У сухому це лише
+            # заважає перевірити стиль постів, тому попереджаємо й ідемо далі.
+            if not DRY_RUN:
+                raise
+            log.warning("KV недоступний — сухий прогін триває без нього")
+            kv = None
 
     # --- 2. Конфіг редакції ---------------------------------------------
     # Файли в репозиторії; URL-змінні, якщо задані, перекривають їх.
@@ -242,15 +250,21 @@ def run() -> int:
         st.save(current)
         return 0
 
-    # Позначаємо як бачені ДО генерації: якщо прогін впаде на моделі,
-    # наступний не має ганяти ті самі айтеми повторно.
-    for item in candidates:
-        if item.get("hash") is not None:
-            current["seen"].append({"hash": str(item["hash"]), "ts": st.now_iso()})
-
     # --- 6. Генерація ---------------------------------------------------
     recent = st.recent_published(current, limit=30)
     posts = generate.generate(prompt_doc, candidates, recent)
+
+    # Баченими вважаємо лише те, що модель реально подивилась. Айтеми, до яких
+    # черга не дійшла (скінчилась денна квота), лишаються непозначеними
+    # й повертаються наступного прогону.
+    marked = 0
+    for item in candidates:
+        if item.get("_processed") and item.get("hash") is not None:
+            current["seen"].append({"hash": str(item["hash"]), "ts": st.now_iso()})
+            marked += 1
+    if marked < len(candidates):
+        log.info("у seen[] додано %d із %d кандидатів — решта повернеться наступного прогону",
+                 marked, len(candidates))
 
     # --- 7. Ліміти ------------------------------------------------------
     chosen = apply_limits(posts, config["total_limit"], config["rubric_limits"])

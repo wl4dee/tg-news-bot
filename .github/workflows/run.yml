@@ -2,8 +2,10 @@ name: collect
 
 on:
   schedule:
-    # Кожні 30 хвилин. Actions на публічних репозиторіях безлімітні.
-    - cron: "*/30 * * * *"
+    # Раз на годину. Обмежує не GitHub (на публічних репо Actions безлімітні),
+    # а денна квота безкоштовного тарифу Gemini: 24 прогони * 8 кандидатів
+    # = 192 запити на добу. Див. коментар біля _candidates у config/sources.txt.
+    - cron: "7 * * * *"
   workflow_dispatch:
     inputs:
       dry_run:
