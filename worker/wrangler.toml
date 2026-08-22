@@ -2,10 +2,11 @@ name = "tg-news-bot"
 main = "src/index.js"
 compatibility_date = "2025-01-01"
 
-# CHANNEL_ID не секрет: це просто id чату виду -1001234567890.
-# Підстав свій перед деплоєм.
+# CHANNEL_ID не секрет. Для ПУБЛІЧНОГО каналу Telegram приймає @username
+# замість числового id — тому числовий id тут не потрібен узагалі.
+# Якщо колись зробиш канал приватним, заміни на id виду -1001234567890.
 [vars]
-CHANNEL_ID = "-100REPLACE_ME"
+CHANNEL_ID = "@wladee_news"
 
 # id береться з `npx wrangler kv namespace create NEWSBOT`.
 # Назва NEWSBOT важлива: збирач резолвить неймспейс саме за нею.
