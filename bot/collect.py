@@ -214,6 +214,16 @@ def collect_all(sources: list[dict], state: dict) -> list[dict]:
         log.info("  %-4s %-10s %2d айтемів  %s",
                  source["kind"], source["rubric"], len(fetched), key)
 
+    # Прибрати з dead_sources те, чого вже немає в конфігу. Інакше запис про
+    # видалене джерело висить вічно (він чиститься лише при успішному зборі)
+    # і збиває з пантелику при розборі: здається, що джерело досі падає.
+    current = {s["value"] for s in sources}
+    stale = [url for url in state["dead_sources"] if url not in current]
+    for url in stale:
+        del state["dead_sources"][url]
+    if stale:
+        log.info("прибрано %d записів про джерела, яких уже немає в конфігу", len(stale))
+
     log.info(
         "зібрано %d айтемів із %d джерел (впало %d, на лаві %d)",
         len(items), ok_count, failed, benched,

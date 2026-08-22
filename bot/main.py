@@ -30,6 +30,34 @@ REQUIRED_SECRETS = [
 KV_SECRETS = ["CF_ACCOUNT_ID", "CF_KV_TOKEN"]
 
 
+RUN_LOG_PATH = "last_run.log"
+
+
+class _Recorder(logging.Handler):
+    """Складає весь лог прогону в пам'ять, щоб потім покласти у файл.
+
+    Логи GitHub Actions доступні лише адміну репозиторію, тож розбирати
+    «чому нічого не вийшло» доводилось наосліп. Файл `last_run.log` комітиться
+    разом зі `state.json` — і стає видимим будь-кому, хто дивиться репозиторій.
+
+    Секретів у ньому немає за побудовою: значення env-змінних не логуються
+    ніде в проєкті, а відповіді Telegram і Gemini токенів не містять.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.lines: list[str] = []
+
+    def emit(self, record: logging.LogRecord) -> None:
+        try:
+            self.lines.append(self.format(record))
+        except Exception:  # noqa: BLE001 — логер не має права валити прогін
+            pass
+
+
+_recorder = _Recorder()
+
+
 def setup_logging() -> None:
     # Windows-консоль інакше калічить кирилицю; в Actions це no-op.
     for stream in (sys.stdout, sys.stderr):
@@ -37,12 +65,30 @@ def setup_logging() -> None:
             stream.reconfigure(encoding="utf-8")
         except (AttributeError, ValueError):
             pass
+    fmt = logging.Formatter(
+        "%(asctime)s %(levelname)-7s %(name)s: %(message)s", datefmt="%H:%M:%S"
+    )
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)-7s %(message)s",
         datefmt="%H:%M:%S",
     )
+    _recorder.setFormatter(fmt)
+    if _recorder not in logging.getLogger().handlers:
+        logging.getLogger().addHandler(_recorder)
     logging.getLogger("urllib3").setLevel(logging.WARNING)
+
+
+def write_run_log(outcome: str) -> None:
+    """Покласти лог прогону у файл. Ніколи не валить прогін через помилку запису."""
+    try:
+        with open(RUN_LOG_PATH, "w", encoding="utf-8") as fh:
+            fh.write(f"# прогін {st.now_iso()} — {outcome}\n")
+            fh.write(f"# {'DRY_RUN' if DRY_RUN else 'бойовий режим'}\n\n")
+            fh.write("\n".join(_recorder.lines))
+            fh.write("\n")
+    except OSError as exc:
+        log.warning("не вдалося записати %s: %s", RUN_LOG_PATH, exc)
 
 
 def rank(item: dict) -> float:
@@ -263,11 +309,22 @@ def run() -> int:
 
 def main() -> int:
     try:
-        return run()
+        code = run()
     except ConfigError as exc:
         setup_logging()
+        log.error("прогін зупинено: %s", exc)
         print(f"\n!!! {exc}\n", file=sys.stderr)
+        write_run_log("ЗУПИНЕНО: немає конфігу або секретів")
         return 1
+    except Exception as exc:  # noqa: BLE001
+        # Навіть несподіване падіння має лишити слід у файлі, інакше
+        # розбиратись доведеться знову наосліп.
+        setup_logging()
+        log.exception("несподіване падіння: %s", exc)
+        write_run_log(f"ВПАВ: {type(exc).__name__}")
+        raise
+    write_run_log("завершено" if code == 0 else f"код виходу {code}")
+    return code
 
 
 if __name__ == "__main__":
