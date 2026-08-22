@@ -119,7 +119,22 @@ Actions → `collect` → Run workflow. У групі мають з'явитис
 pip install -r requirements.txt
 ```
 
-Створи `.env` (він у `.gitignore`) із тими самими п'ятьма змінними й запусти сухий прогін:
+```bash
+cp .env.example .env
+```
+
+Заповни `.env` (він у `.gitignore`) і перевір, що всі ланки живі:
+
+```bash
+python -m tests.doctor
+```
+
+`doctor` перевіряє по черзі: змінні оточення, конфіг у `config/`, токен Telegram,
+доступ до групи чернеток, статус вебхука, реальну відповідь Gemini і Cloudflare KV.
+Значень секретів він не друкує — тільки довжину, тож вивід можна показувати кому
+завгодно.
+
+Далі сухий прогін:
 
 ```bash
 DRY_RUN=1 python -m bot.main
@@ -151,6 +166,11 @@ python -m tests.smoke_pipeline
 node worker/test/handler.test.mjs
 ```
 
+```bash
+python -m tests.doctor
+```
+
+- `doctor` — де саме зламано: секрети, конфіг, Telegram, вебхук, Gemini, KV.
 - `check_invariants` — доводить по AST, що в `bot/` немає ні доступу до каналу,
   ні `getUpdates`, ні видалення повідомлень.
 - `dedupe --selftest` — калібрувальний набір, на якому обраний поріг simhash.

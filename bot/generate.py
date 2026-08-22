@@ -1,6 +1,6 @@
 """Виклик Gemini і розбір JSON-контракту.
 
-Контракт описаний у .claude/rules/prompt-contract.md і в документі 01.
+Контракт описаний у .claude/rules/prompt-contract.md і в config/prompt.md.
 Міняєш тут — міняй і там, обидва місця.
 
 Головне правило модуля: зіпсована відповідь моделі НІКОЛИ не валить прогін.
@@ -15,7 +15,12 @@ import time
 
 import requests
 
-from bot.config import GEMINI_MODEL, GEMINI_PAUSE_SEC, env
+from bot.config import (
+    GEMINI_MODEL,
+    GEMINI_PAUSE_SEC,
+    GEMINI_THINKING_BUDGET,
+    env,
+)
 
 log = logging.getLogger(__name__)
 
@@ -23,6 +28,7 @@ ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/{model}:gene
 
 MAX_ATTEMPTS = 3
 TEXT_LIMIT = 4096  # ліміт Telegram на довжину повідомлення
+MAX_OUTPUT_TOKENS = 4096
 
 _FENCE_RE = re.compile(r"^\s*```(?:json)?\s*|\s*```\s*$", re.IGNORECASE)
 
@@ -31,7 +37,7 @@ REQUIRED_ON_PUBLISH = ("score", "story_key", "rubric", "text", "source_url")
 
 def build_prompt(prompt_doc: str, item: dict, recent: list[dict],
                  is_retry: bool = False) -> str:
-    """Промпт = документ 01 як є + сирий айтем + контекст останніх постів.
+    """Промпт = config/prompt.md як є + сирий айтем + контекст останніх постів.
 
     RECENT_POSTS потрібен рівно для одного: щоб модель зібрала блок «Раніше:»
     і не переказала новину, яка вже виходила. Це головна фішка каналу —
@@ -85,10 +91,19 @@ def _call_api(api_key: str, prompt: str) -> str | None:
         "contents": [{"role": "user", "parts": [{"text": prompt}]}],
         "generationConfig": {
             "temperature": 0.4,
-            "maxOutputTokens": 2048,
+            "maxOutputTokens": MAX_OUTPUT_TOKENS,
             "response_mime_type": "application/json",
         },
     }
+    # Gemini 2.5 Flash — модель із мисленням, і воно ввімкнене за замовчуванням.
+    # Токени мислення рахуються в maxOutputTokens, тож модель здатна витратити
+    # весь ліміт на роздуми й повернути ПОРОЖНЮ відповідь із finishReason=
+    # MAX_TOKENS — зовні це виглядає як «модель нічого не пропускає». Для
+    # переписування новини за готовим шаблоном мислення не потрібне.
+    if GEMINI_THINKING_BUDGET >= 0:
+        payload["generationConfig"]["thinkingConfig"] = {
+            "thinkingBudget": GEMINI_THINKING_BUDGET
+        }
 
     for attempt in range(1, MAX_ATTEMPTS + 1):
         try:
@@ -108,15 +123,25 @@ def _call_api(api_key: str, prompt: str) -> str | None:
         if resp.status_code == 200:
             try:
                 data = resp.json()
+            except ValueError:
+                log.error("Gemini: 200, але тіло не JSON")
+                return None
+            try:
                 return data["candidates"][0]["content"]["parts"][0]["text"]
-            except (ValueError, KeyError, IndexError):
-                # Порожній кандидат буває при спрацюванні фільтрів безпеки.
-                reason = ""
-                try:
-                    reason = str(resp.json().get("promptFeedback", ""))[:200]
-                except ValueError:
-                    pass
-                log.error("Gemini: відповідь без тексту. promptFeedback=%s", reason)
+            except (KeyError, IndexError):
+                # Порожній кандидат. Причина майже завжди в одному з двох:
+                # фільтри безпеки (finishReason=SAFETY) або вичерпаний
+                # maxOutputTokens (MAX_TOKENS) — друге трапляється, коли модель
+                # витратила ліміт на мислення. Друкуємо і те, і те: без цих
+                # полів симптом виглядає просто як «модель нічого не пропускає».
+                cand = (data.get("candidates") or [{}])[0]
+                log.error(
+                    "Gemini: відповідь без тексту. finishReason=%s, "
+                    "promptFeedback=%s, usage=%s",
+                    cand.get("finishReason", "?"),
+                    str(data.get("promptFeedback", ""))[:120],
+                    str(data.get("usageMetadata", ""))[:200],
+                )
                 return None
 
         if resp.status_code == 429 or resp.status_code >= 500:
