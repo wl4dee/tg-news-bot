@@ -1,7 +1,19 @@
-"""Google Docs як конфіг. Промпт і джерела читаються при кожному запуску."""
+"""Конфіг редакції: промпт стилю і список джерел.
+
+Основне джерело істини — файли `config/prompt.md` і `config/sources.txt`
+в репозиторії. Вони читаються при кожному запуску, тож правка стилю — це
+коміт, а не деплой. Правити можна з телефону через веб-редактор GitHub
+або руками Claude Code.
+
+Google Docs лишились як НЕОБОВ'ЯЗКОВЕ перекриття: якщо задано PROMPT_DOC_URL
+чи SOURCES_DOC_URL, береться документ, а файл ігнорується. Це аварійний шлях
+для випадку «треба поправити стиль із телефону без доступу до GitHub».
+Якщо змінна не задана — жодного мережевого запиту не робиться.
+"""
 from __future__ import annotations
 
 import logging
+import os
 import re
 
 import requests
@@ -26,6 +38,34 @@ _LOGIN_MARKERS = ("accounts.google.com/servicelogin", "accounts.google.com/v3/si
 # Google Docs при експорті в txt екранує службові символи зворотним слешем.
 # chr(92) — це і є той слеш; так регулярка не залежить від екранування в шелі.
 _UNESCAPE = re.compile(chr(92) * 2 + r"([#_*&<>.\[\]-])")
+
+
+PROMPT_PATH = "config/prompt.md"
+SOURCES_PATH = "config/sources.txt"
+
+
+def load(path: str, override_url: str, label: str) -> str:
+    """Конфіг із файлу, або з Google Doc, якщо задано URL-перекриття."""
+    if override_url:
+        log.info("«%s»: використовується URL-перекриття замість %s", label, path)
+        return fetch(override_url, label)
+
+    if not os.path.exists(path):
+        raise ConfigError(
+            f"Немає файлу конфігу {path} («{label}»).\n"
+            f"Він має лежати в репозиторії поруч із CLAUDE.md.\n"
+            f"Якщо конфіг тимчасово живе в Google Docs — задай змінну оточення "
+            f"з URL виду .../export?format=txt"
+        )
+
+    with open(path, encoding="utf-8") as fh:
+        text = fh.read()
+
+    if not text.strip():
+        raise ConfigError(f"Файл конфігу {path} («{label}») порожній.")
+
+    log.info("«%s»: %s, %d символів", label, path, len(text))
+    return text
 
 
 def fetch(url: str, label: str) -> str:

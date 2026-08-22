@@ -49,8 +49,6 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           DRAFTS_CHAT_ID: ${{ secrets.DRAFTS_CHAT_ID }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          PROMPT_DOC_URL: ${{ secrets.PROMPT_DOC_URL }}
-          SOURCES_DOC_URL: ${{ secrets.SOURCES_DOC_URL }}
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CF_KV_TOKEN: ${{ secrets.CF_KV_TOKEN }}
           DRY_RUN: ${{ inputs.dry_run && '1' || '' }}

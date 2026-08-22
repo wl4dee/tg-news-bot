@@ -21,8 +21,6 @@ REQUIRED_SECRETS = [
     "TELEGRAM_BOT_TOKEN",
     "DRAFTS_CHAT_ID",
     "GEMINI_API_KEY",
-    "PROMPT_DOC_URL",
-    "SOURCES_DOC_URL",
 ]
 
 # У бойовому прогоні без KV немає сенсу: кнопки не працюватимуть.
@@ -174,9 +172,14 @@ def run() -> int:
         current["kv_namespace_id"] = kv.namespace_id
         retries = kvmod.drain(kv, current)
 
-    # --- 2. Конфіг із Google Docs --------------------------------------
-    prompt_doc = docs.fetch(env("PROMPT_DOC_URL"), "01 — Промпт: стиль каналу")
-    sources_doc = docs.fetch(env("SOURCES_DOC_URL"), "02 — Джерела")
+    # --- 2. Конфіг редакції ---------------------------------------------
+    # Файли в репозиторії; URL-змінні, якщо задані, перекривають їх.
+    prompt_doc = docs.load(
+        docs.PROMPT_PATH, env("PROMPT_DOC_URL", required=False), "промпт стилю"
+    )
+    sources_doc = docs.load(
+        docs.SOURCES_PATH, env("SOURCES_DOC_URL", required=False), "джерела"
+    )
     config = docs.parse_sources(sources_doc)
 
     # --- 3. Зібрати матеріал -------------------------------------------

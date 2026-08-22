@@ -21,7 +21,7 @@ from bot.main import apply_limits, pick_candidates
 logging.basicConfig(level=logging.INFO, format="%(levelname)-7s %(message)s")
 log = logging.getLogger("smoke")
 
-FIXTURE = "tests/sources_fixture.txt"
+FIXTURE = "config/sources.txt"
 
 # Що модель нібито повернула. Формат — точно за контрактом із документа 01.
 FAKE_POST = {
@@ -56,8 +56,15 @@ def main() -> int:
     # 2. Живий збір. Беремо підмножину, щоб тест лишався швидким.
     print("\n=== 2. збір із живих джерел ===")
     state = {"seen": [], "published": [], "stats": [], "dead_sources": {}}
+    # По одному джерелу з кожної рубрики, а не перші N підряд: інакше вибірка
+    # виявляється однорідною (перші RSS у файлі — регулятори, які публікують
+    # раз на тиждень) і передфільтр по рубриках лишається неперевіреним.
     subset = [s for s in config["sources"] if s["kind"] == "tg"][:1]
-    subset += [s for s in config["sources"] if s["kind"] == "rss"][:3]
+    for rubric in sorted({s["rubric"] for s in config["sources"]}):
+        rss = [s for s in config["sources"]
+               if s["kind"] == "rss" and s["rubric"] == rubric]
+        if rss:
+            subset.append(rss[-1])
     subset.append({"kind": "rss", "value": "https://dead.invalid/feed.xml",
                    "rubric": "техно", "weight": 1, "id": "dead"})
 
