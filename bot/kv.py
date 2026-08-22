@@ -54,6 +54,21 @@ class KV:
             errors = "; ".join(
                 str(e.get("message", e)) for e in data.get("errors", [])
             ) or f"HTTP {resp.status_code}"
+
+            # Найчастіша й найнезрозуміліша помилка: у секрет поклали не той
+            # рядок. «Authentication error» саме по собі не підказує нічого,
+            # тому пишемо, що конкретно робити.
+            if resp.status_code in (401, 403) or "uthentication" in errors:
+                raise ConfigError(
+                    f"Cloudflare не приймає CF_KV_TOKEN: {errors}\n"
+                    f"Це саме токен, а не Global API Key і не Account ID.\n"
+                    f"Створити новий: dash.cloudflare.com → іконка профілю →\n"
+                    f"  My Profile → API Tokens → Create Token →\n"
+                    f"  Create Custom Token → Permissions:\n"
+                    f"    Account | Workers KV Storage | Edit\n"
+                    f"Готовий токен — рівно 40 символів, без пробілів.\n"
+                    f"Покласти в GitHub: Settings → Secrets and variables → Actions."
+                )
             raise ConfigError(f"Cloudflare KV: {errors}")
         return data
 
