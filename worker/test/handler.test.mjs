@@ -225,5 +225,26 @@ await test("callback без картки draft не валить воркер", 
   assert(used("answerCallbackQuery").length === 1, "не відповіли на callback");
 });
 
+await test("без TELEGRAM_BOT_TOKEN воркер не публікує і каже про це", async () => {
+  // Реальна поломка з першого запуску: секрет забули покласти у воркер, усі
+  // виклики летіли на /botundefined/, а кнопка крутилась вічно без пояснень.
+  const env = makeEnv({ "draft:abc12345": DRAFT_CARD });
+  delete env.TELEGRAM_BOT_TOKEN;
+
+  const errors = [];
+  const originalError = console.error;
+  console.error = (...args) => errors.push(args.join(" "));
+
+  const resp = await worker.fetch(request(callbackUpdate("p:abc12345")), env);
+  console.error = originalError;
+
+  assert(resp.status === 200, "має бути 200, щоб Telegram не ретраїв");
+  assert(calls.length === 0, "без токена не можна нікуди ходити");
+  assert(errors.some((e) => e.includes("TELEGRAM_BOT_TOKEN")),
+    "у лог має потрапити зрозуміла причина");
+  assert((await env.NEWSBOT.get("log:abc12345")) === null,
+    "не можна писати log, якщо в канал нічого не пішло");
+});
+
 console.log(`\nпройдено ${passed}, впало ${failed}`);
 process.exit(failed === 0 ? 0 : 1);

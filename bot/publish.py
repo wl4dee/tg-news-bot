@@ -199,7 +199,10 @@ class Telegram:
             "text": text,
             "parse_mode": "HTML",
             "reply_markup": keyboard,
-            "disable_web_page_preview": False,
+            # Прев'ю джерела чіпляє під пост чужу картку з фото й заголовком
+            # видання — виглядає як реклама першоджерела, а не як наш пост.
+            # Лінк у ліді нікуди не дівається, просто без картки.
+            "disable_web_page_preview": True,
         })
         if not result:
             return None

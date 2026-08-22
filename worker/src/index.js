@@ -149,6 +149,17 @@ async function answer(env, callbackQueryId, text) {
 }
 
 async function tg(env, method, payload) {
+  // Без цієї перевірки відсутній секрет дає найгіршу з можливих поломок: усі
+  // виклики летять на /botundefined/, Telegram віддає 404, воркер повертає 200,
+  // а кнопка просто крутиться вічно. Мовчазний збій, який нічим себе не видає.
+  if (!env.TELEGRAM_BOT_TOKEN) {
+    console.error(
+      "TELEGRAM_BOT_TOKEN не заданий у секретах воркера. " +
+        "Полагодити: npx wrangler secret put TELEGRAM_BOT_TOKEN"
+    );
+    return { ok: false, description: "worker has no TELEGRAM_BOT_TOKEN" };
+  }
+
   const resp = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/${method}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
