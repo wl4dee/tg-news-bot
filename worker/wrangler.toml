@@ -11,7 +11,7 @@ CHANNEL_ID = "-100REPLACE_ME"
 # Назва NEWSBOT важлива: збирач резолвить неймспейс саме за нею.
 [[kv_namespaces]]
 binding = "NEWSBOT"
-id = "REPLACE_ME"
+id = "c5e7197bae234cdc953d451966db3991"
 
 # Секрети сюди НЕ пишуться. Тільки так:
 #   npx wrangler secret put TELEGRAM_BOT_TOKEN
