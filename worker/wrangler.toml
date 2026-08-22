@@ -1,0 +1,18 @@
+name = "tg-news-bot"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+# CHANNEL_ID не секрет: це просто id чату виду -1001234567890.
+# Підстав свій перед деплоєм.
+[vars]
+CHANNEL_ID = "-100REPLACE_ME"
+
+# id береться з `npx wrangler kv namespace create NEWSBOT`.
+# Назва NEWSBOT важлива: збирач резолвить неймспейс саме за нею.
+[[kv_namespaces]]
+binding = "NEWSBOT"
+id = "REPLACE_ME"
+
+# Секрети сюди НЕ пишуться. Тільки так:
+#   npx wrangler secret put TELEGRAM_BOT_TOKEN
+#   npx wrangler secret put WEBHOOK_SECRET

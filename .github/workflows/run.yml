@@ -1,0 +1,72 @@
+name: collect
+
+on:
+  schedule:
+    # Кожні 30 хвилин. Actions на публічних репозиторіях безлімітні.
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Сухий прогін: нічого не відправляти і не комітити"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+# Два прогони не мають одночасно пушити state.json.
+# cancel-in-progress: false — краще почекати, ніж загубити зібрані чернетки.
+concurrency:
+  group: collect
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Встановити залежності
+        run: pip install -r requirements.txt
+
+      - name: Перевірити інваріанти
+        # Автопублікації не існує. Якщо в bot/ з'явився доступ до каналу
+        # або polling — прогін не має відбутися взагалі.
+        run: python -m tests.check_invariants
+
+      - name: Перевірити дедуп
+        run: python -m bot.dedupe --selftest
+
+      - name: Прогін
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          DRAFTS_CHAT_ID: ${{ secrets.DRAFTS_CHAT_ID }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PROMPT_DOC_URL: ${{ secrets.PROMPT_DOC_URL }}
+          SOURCES_DOC_URL: ${{ secrets.SOURCES_DOC_URL }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_KV_TOKEN: ${{ secrets.CF_KV_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run && '1' || '' }}
+        run: python -m bot.main
+
+      - name: Закомітити state.json
+        if: ${{ !inputs.dry_run }}
+        run: |
+          if git diff --quiet -- state.json; then
+            echo "state.json без змін — коміт не потрібен"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state.json
+          git commit -m "state: прогін $(date -u '+%Y-%m-%d %H:%M UTC')"
+          # Між прогоном і пушем міг лягти інший коміт — підтягуємо його.
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

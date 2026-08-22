@@ -1,0 +1,42 @@
+{
+  "model": "opusplan",
+  "permissions": {
+    "allow": [
+      "Bash(python -m bot.*)",
+      "Bash(python -c:*)",
+      "Bash(pip install:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(npx wrangler dev:*)",
+      "Bash(npx wrangler kv:*)",
+      "Bash(curl -s https://t.me/s/*)",
+      "Bash(curl -sI:*)",
+      "Read(//c/Users/wlade/tg-news-bot/**)",
+      "WebFetch(domain:t.me)",
+      "WebFetch(domain:docs.google.com)"
+    ],
+    "deny": [
+      "Bash(curl:*api.telegram.org*sendMessage*)",
+      "Bash(curl:*api.telegram.org*copyMessage*)",
+      "Bash(curl:*api.telegram.org*getUpdates*)",
+      "Read(./.env)",
+      "Read(./.dev.vars)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/block-secrets.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

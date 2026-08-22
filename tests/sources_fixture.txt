@@ -1,0 +1,47 @@
+ДЖЕРЕЛА
+
+Оновлено: 19.08.2026
+
+Формат рядка: тип | значення | рубрика | вага
+
+Рядки з \# — коментарі, ігноруються.
+
+\# ═══════ ТГ-КАНАЛИ (скрап t.me/s/, без логіну) ═══════
+
+tg | crypto\_hd | крипта | 2
+
+tg | trade\_ultra | крипта | 1
+
+tg | lachentyt | Україна | 1
+
+tg | kievreal1 | Київ | 1
+
+\# Приватні інвайт-лінки веб-прев'ю не мають, потрібен Telethon. Відкладено до v2:
+
+\# tg\_private | +qzx5UNSknP01Yzhi
+
+tg\_private | +vMpudn2KPpIxYTAy
+
+\# ═══════ ПЕРШОДЖЕРЕЛА ═══════
+
+rss | https://www.sec.gov/news/pressreleases.rss | ринки | 3
+
+rss | https://bank.gov.ua/ua/news/rss | Україна | 3
+
+rss | https://www.coindesk.com/arc/outboundfeeds/rss/ | крипта | 2
+
+rss | https://news.google.com/rss/search?q=%D0%9A%D0%B8%D1%97%D0%B2\&hl=uk\&gl=UA\&ceid=UA:uk | Київ | 1
+
+rss | https://techcrunch.com/feed/ | техно | 2
+
+\# ═══════ БАЛАНС РУБРИК ═══════
+
+limit | крипта | 3
+
+limit | ринки | 2
+
+limit | техно | 2
+
+limit | Україна | 3
+
+limit | Київ | 2
