@@ -1,58 +1,14 @@
-# прогін 2026-08-22T16:00:04Z — завершено
+# прогін 2026-08-22T18:52:29Z — ЗУПИНЕНО: немає конфігу або секретів
 # бойовий режим
 
-18:59:49 INFO    bot: === прогін почався ===
-18:59:49 INFO    bot.publish: бот @wl4dee_bot на зв'язку
-18:59:49 INFO    bot.publish: група чернеток: «Чорнетка» (supergroup)
-18:59:49 INFO    bot.kv: KV: злито 2 нових рішень із 2 ключів log, запитів на перегенерацію: 0
-18:59:50 INFO    bot.kv: KV: видалено 4 оброблених ключів
-18:59:50 INFO    bot.docs: «промпт стилю»: config/prompt.md, 5505 символів
-18:59:50 INFO    bot.docs: «джерела»: config/sources.txt, 5123 символів
-18:59:50 INFO    bot.docs: джерела: 34 (tg=5, rss=29), рубрик з лімітами: 5, усього за прогін: 6, кандидатів у модель: 4, пропущено рядків: 1
-18:59:50 INFO    bot.collect:   tg   крипта     12 айтемів  crypto_hd
-18:59:51 INFO    bot.collect:   tg   крипта      5 айтемів  trade_ultra
-18:59:51 INFO    bot.collect:   tg   крипта     10 айтемів  trade001k
-18:59:51 INFO    bot.collect:   tg   Україна    10 айтемів  lachentyt
-18:59:52 INFO    bot.collect:   tg   Київ       12 айтемів  kievreal1
-18:59:52 INFO    bot.collect:   rss  ринки       0 айтемів  https://www.sec.gov/news/pressreleases.rss
-18:59:52 INFO    bot.collect:   rss  ринки       0 айтемів  https://www.federalreserve.gov/feeds/press_all.xml
-18:59:53 INFO    bot.collect:   rss  ринки       1 айтемів  https://www.ecb.europa.eu/rss/press.html
-18:59:53 INFO    bot.collect:   rss  крипта     15 айтемів  https://www.coindesk.com/arc/outboundfeeds/rss/
-18:59:53 INFO    bot.collect:   rss  крипта     15 айтемів  https://cointelegraph.com/rss
-18:59:53 INFO    bot.collect:   rss  крипта     13 айтемів  https://decrypt.co/feed
-18:59:53 INFO    bot.collect:   rss  крипта     12 айтемів  https://www.theblock.co/rss.xml
-18:59:54 INFO    bot.collect:   rss  крипта      0 айтемів  https://blockworks.co/feed
-18:59:54 INFO    bot.collect:   rss  ринки       3 айтемів  https://www.cnbc.com/id/20910258/device/rss/rss.html
-18:59:55 INFO    bot.collect:   rss  ринки      10 айтемів  http://feeds.marketwatch.com/marketwatch/topstories/
-18:59:55 INFO    bot.collect:   rss  ринки      15 айтемів  https://finance.yahoo.com/news/rssindex
-18:59:55 INFO    bot.collect:   rss  техно      15 айтемів  https://techcrunch.com/feed/
-18:59:55 INFO    bot.collect:   rss  техно      10 айтемів  https://www.theverge.com/rss/index.xml
-18:59:55 INFO    bot.collect:   rss  техно      13 айтемів  https://feeds.arstechnica.com/arstechnica/index
-18:59:56 INFO    bot.collect:   rss  техно      10 айтемів  https://hnrss.org/frontpage?points=300
-18:59:57 INFO    bot.collect:   rss  техно      15 айтемів  https://dev.ua/rss
-18:59:57 INFO    bot.collect:   rss  техно      15 айтемів  https://ain.ua/feed/
-18:59:57 INFO    bot.collect:   rss  Україна    15 айтемів  https://www.pravda.com.ua/rss/
-18:59:58 INFO    bot.collect:   rss  Україна    15 айтемів  https://nv.ua/ukr/rss/all.xml
-18:59:58 INFO    bot.collect:   rss  Україна    15 айтемів  https://interfax.com.ua/news/last.rss
-18:59:59 INFO    bot.collect:   rss  Україна    15 айтемів  https://www.ukrinform.ua/rss/block-lastnews
-18:59:59 INFO    bot.collect:   rss  Україна    15 айтемів  https://suspilne.media/rss/all.rss
-19:00:00 INFO    bot.collect:   rss  Україна    15 айтемів  https://censor.net/includes/news_uk.xml
-19:00:00 INFO    bot.collect:   rss  Україна    15 айтемів  https://biz.censor.net/includes/news_uk.xml
-19:00:01 INFO    bot.collect:   rss  Україна    15 айтемів  https://www.radiosvoboda.org/api/zrqiteuuir
-19:00:02 INFO    bot.collect:   rss  Київ       14 айтемів  https://news.google.com/rss/search?q=%D0%9A%D0%B8%D1%97%D0%B2&hl=uk&gl=UA&ceid=UA:uk
-19:00:02 INFO    bot.collect:   rss  Київ        9 айтемів  https://news.google.com/rss/search?q=%D0%9A%D0%9C%D0%94%D0%90&hl=uk&gl=UA&ceid=UA:uk
-19:00:03 INFO    bot.collect:   rss  крипта      2 айтемів  https://news.google.com/rss/search?q=Ethereum+ETF&hl=uk&gl=UA&ceid=UA:uk
-19:00:03 INFO    bot.collect:   rss  крипта      3 айтемів  https://news.google.com/rss/search?q=Binance&hl=uk&gl=UA&ceid=UA:uk
-19:00:03 INFO    bot.collect: зібрано 359 айтемів із 34 джерел (впало 0, на лаві 0)
-19:00:03 INFO    bot.dedupe: дедуп: 359 на вході → 211 нових (відсіяно: 141 як бачені за 48 год, 7 як дублі всередині прогону)
-19:00:03 INFO    bot: передфільтр: 211 айтемів → 4 кандидатів у модель, по рубриках: {'Київ': 1, 'Україна': 1, 'крипта': 1, 'техно': 1}
-19:00:03 INFO    bot.generate: [1/4] Україна | У Запоріжжі повернули світло для 13,5 тисячі споживачів, знеструмлених
-19:00:04 ERROR   bot.generate: Gemini: вичерпано ДЕННУ квоту безкоштовного тарифу (20 запитів на добу для моделі gemini-3.5-flash). Генерацію зупинено — ретраї тут не допоможуть. Або зменш _candidates у config/sources.txt і частоту крону, або візьми іншу модель через GEMINI_MODEL.
-19:00:04 WARNING bot.generate: оброблено 0 із 4 айтемів до вичерпання денної квоти
-19:00:04 INFO    bot.generate: модель: 4 айтемів → 0 готових постів (відмов: 0, зіпсованих відповідей: 0)
-19:00:04 INFO    bot: у seen[] додано 1 із 4 кандидатів — решта повернеться наступного прогону
-19:00:04 INFO    bot: ліміти: 0 постів → 0 чернеток (відсіяно 0 по лімітах рубрик, 0 по загальному ліміту 6). Розподіл: {}
-19:00:04 INFO    bot: надіслано чернеток: 0
-19:00:04 INFO    bot.state: очищення: seen 245→245, published 2→2, stats 2 (не чиститься)
-19:00:04 INFO    bot.state: state.json записано: seen=245 published=2 stats=2 dead=0
-19:00:04 INFO    bot: === прогін завершено ===
+18:52:29 INFO    bot: === прогін почався ===
+18:52:29 INFO    bot.publish: бот @wl4dee_bot на зв'язку
+18:52:29 INFO    bot.publish: група чернеток: «Чорнетка» (supergroup)
+18:52:29 ERROR   bot: прогін зупинено: Cloudflare не приймає CF_KV_TOKEN: Authentication error
+Це саме токен, а не Global API Key і не Account ID.
+Створити новий: dash.cloudflare.com → іконка профілю →
+  My Profile → API Tokens → Create Token →
+  Create Custom Token → Permissions:
+    Account | Workers KV Storage | Edit
+Готовий токен — рівно 40 символів, без пробілів.
+Покласти в GitHub: Settings → Secrets and variables → Actions.
