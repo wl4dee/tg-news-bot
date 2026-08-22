@@ -975,10 +975,44 @@
     {
       "hash": "2676409494329836696",
       "ts": "2026-08-22T15:04:10Z"
+    },
+    {
+      "hash": "11258163910895313061",
+      "ts": "2026-08-22T16:00:04Z"
     }
   ],
-  "published": [],
-  "stats": [],
+  "published": [
+    {
+      "message_id": 3,
+      "story_key": "odesa-strike-2026-08-22",
+      "rubric": "Україна",
+      "topic": "odesa-strike-2026-08-22",
+      "ts": "2026-08-22T15:28:43Z"
+    },
+    {
+      "message_id": 4,
+      "story_key": "ai-jobs-gender-gap",
+      "rubric": "ринки",
+      "topic": "ai-jobs-gender-gap",
+      "ts": "2026-08-22T15:54:24Z"
+    }
+  ],
+  "stats": [
+    {
+      "score": 8,
+      "rubric": "Україна",
+      "decision": "pub",
+      "ts": "2026-08-22T15:28:43Z",
+      "draft_id": "0afe65ac"
+    },
+    {
+      "score": 7,
+      "rubric": "ринки",
+      "decision": "pub",
+      "ts": "2026-08-22T15:54:24Z",
+      "draft_id": "476e3d1c"
+    }
+  ],
   "dead_sources": {},
   "kv_namespace_id": "c5e7197bae234cdc953d451966db3991"
 }
