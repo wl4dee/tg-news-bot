@@ -287,7 +287,19 @@ def run() -> int:
 
         message_id = tg.send_draft(draft_id, post["text"], meta)
         if message_id is None:
-            log.error("чернетку %s не вдалося надіслати — пропускаємо", draft_id)
+            # Пост готовий, витрачений виклик моделі — а Telegram його не взяв.
+            # Знімаємо позначку «бачений», щоб айтем повернувся наступного
+            # прогону, а не зник разом із причиною збою.
+            failed_hash = str(post.get("_item", {}).get("hash", ""))
+            before = len(current["seen"])
+            current["seen"] = [
+                r for r in current["seen"] if str(r.get("hash")) != failed_hash
+            ]
+            log.error(
+                "чернетку %s не вдалося надіслати — повертаю айтем у чергу%s",
+                draft_id,
+                "" if len(current["seen"]) < before else " (хеш не знайдено)",
+            )
             continue
 
         source_item = post.get("_item", {})

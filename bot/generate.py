@@ -227,10 +227,18 @@ def parse_response(raw: str) -> dict | None:
 
     cleaned = _FENCE_RE.sub("", raw.strip())
     try:
-        data = json.loads(cleaned)
+        # raw_decode, а не loads: модель інколи дописує щось після закритої
+        # дужки — пояснення, другий об'єкт, зайвий рядок. Сам JSON при цьому
+        # цілком валідний, і втрачати через це готовий пост шкода.
+        data, end = json.JSONDecoder().raw_decode(cleaned)
     except json.JSONDecodeError as exc:
         log.error("JSON не розібрався (%s). Сирий вивід: %s", exc, raw[:500])
         return None
+
+    tail = cleaned[end:].strip()
+    if tail:
+        log.warning("після JSON модель дописала %d зайвих символів — ігнорую: %s",
+                    len(tail), tail[:120])
 
     if not isinstance(data, dict):
         log.error("модель повернула не об'єкт, а %s. Сирий вивід: %s",
