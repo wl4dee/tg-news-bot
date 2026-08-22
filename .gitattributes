@@ -1,0 +1,5 @@
+# У репозиторії завжди LF. Інакше .sh з CRLF ламається на Linux-раннері
+# з «bad interpreter», а diff-и state.json шумлять на кожному прогоні.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
