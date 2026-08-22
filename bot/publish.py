@@ -123,6 +123,19 @@ class Telegram:
                 time.sleep(wait + 1)
                 continue
 
+            # Звичайна група стала супергрупою — її номер змінився.
+            # Без цієї гілки прогін мовчав би «chat not found», і шукати
+            # причину довелось би вручну. Telegram віддає новий id тут же.
+            new_id = (data.get("parameters") or {}).get("migrate_to_chat_id")
+            if new_id:
+                log.error(
+                    "Група «Чернетки» перетворилась на супергрупу, її номер змінився.\n"
+                    "    Новий DRAFTS_CHAT_ID: %s\n"
+                    "    Онови секрет у GitHub: Settings → Secrets and variables → Actions.",
+                    new_id,
+                )
+                return None
+
             # Токен у логи не потрапляє: у description його немає.
             log.error("Telegram %s: %s", method, description)
             return None
