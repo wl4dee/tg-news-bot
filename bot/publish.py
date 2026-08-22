@@ -142,6 +142,38 @@ class Telegram:
 
         return None
 
+    def verify(self) -> bool:
+        """Перевірити токен і доступ до групи ДО генерації.
+
+        Обидва виклики read-only — нічого нікуди не надсилається, навіть у
+        бойовому режимі. Сенс у тому, щоб зламаний токен чи неправильний
+        DRAFTS_CHAT_ID виявились за дві секунди, а не після півтори хвилини
+        роботи моделі й витраченої квоти безкоштовного тарифу.
+        """
+        me = self._call("getMe", {}, attempts=1)
+        if not me:
+            log.error(
+                "TELEGRAM_BOT_TOKEN не працює.\n"
+                "    Перевір секрет у GitHub: Settings → Secrets and variables → Actions.\n"
+                "    Якщо токен загублено — @BotFather → /mybots → API Token."
+            )
+            return False
+        log.info("бот @%s на зв'язку", me.get("username", "?"))
+
+        chat = self._call("getChat", {"chat_id": self.drafts_chat_id}, attempts=1)
+        if not chat:
+            log.error(
+                "Група чернеток недоступна за DRAFTS_CHAT_ID.\n"
+                "    Найчастіші причини: бота не додано в групу, або номер групи\n"
+                "    змінився після підвищення до супергрупи, або в секреті зайвий пробіл."
+            )
+            return False
+        log.info(
+            "група чернеток: «%s» (%s)",
+            chat.get("title", "?"), chat.get("type", "?"),
+        )
+        return True
+
     def send_draft(self, draft_id: str, text: str, meta: str) -> int | None:
         """Чернетка в групу з трьома кнопками. Повертає message_id або None."""
         keyboard = {

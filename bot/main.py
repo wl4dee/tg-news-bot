@@ -158,6 +158,13 @@ def run() -> int:
 
     current = st.load()
 
+    # --- 0. Перевірка зв'язку -------------------------------------------
+    # Read-only, нічого не надсилає. Стоїть тут, а не перед кроком 8, щоб
+    # зламаний токен не з'ясовувався після витраченої квоти Gemini.
+    tg = publish.Telegram()
+    if not tg.verify():
+        return 1
+
     # --- 1. Забрати рішення воркера з KV -------------------------------
     kv = None
     retries: list[dict] = []
@@ -200,7 +207,6 @@ def run() -> int:
     chosen = apply_limits(posts, config["total_limit"], config["rubric_limits"])
 
     # --- 8. Чернетки в групу + картки в KV ------------------------------
-    tg = publish.Telegram()
     sent = 0
     for index, post in enumerate(chosen):
         problems = publish.validate_html(post["text"])
