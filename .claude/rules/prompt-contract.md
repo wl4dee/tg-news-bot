@@ -31,8 +31,8 @@
 {
   "publish": true,
   "score": 8,
-  "story_key": "bitmart-insolvency",
-  "rubric": "крипта",
+  "story_key": "kyiv-metro-blue-line",
+  "rubric": "Київ",
   "template": "Б",
   "text": "<HTML для Telegram>",
   "source_url": "https://...",
@@ -45,7 +45,7 @@
 | `publish` | bool | так | `false` → пропуск, решта полів ігнорується |
 | `score` | int 1-10 | при `publish=true` | `config/prompt.md` велить не публікувати `< 6` |
 | `story_key` | str | при `publish=true` | стабільний kebab-case, ключ ланцюжка історії |
-| `rubric` | str | ні | одна з рубрик `config/sources.txt`; якщо модель не повернула — береться рубрика джерела |
+| `rubric` | str | ні | одна з рубрик `config/sources.txt`; вигадану назву код відкидає і бере рубрику джерела |
 | `template` | str | ні | `А` / `Б` / `В` / `Г`, суто для статистики |
 | `text` | str | при `publish=true` | готовий HTML, ≤ 4096 |
 | `source_url` | str | при `publish=true` | першоджерело, не ТГ-посередник |

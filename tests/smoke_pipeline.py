@@ -96,7 +96,7 @@ def main() -> int:
 
     # 4. Передфільтр кандидатів.
     print("\n=== 4. передфільтр ===")
-    candidates = pick_candidates(fresh, config["candidate_limit"])
+    candidates = pick_candidates(fresh, config["candidate_limit"], config["rubric_limits"])
     if len(candidates) > config["candidate_limit"]:
         problems.append("передфільтр перевищив ліміт кандидатів")
     rubrics = {c["rubric"] for c in candidates}

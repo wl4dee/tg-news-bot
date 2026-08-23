@@ -995,6 +995,22 @@
     {
       "hash": "15856148460152548493",
       "ts": "2026-08-23T11:51:16Z"
+    },
+    {
+      "hash": "4231931442538123613",
+      "ts": "2026-08-23T12:20:04Z"
+    },
+    {
+      "hash": "9912016987072255532",
+      "ts": "2026-08-23T12:20:04Z"
+    },
+    {
+      "hash": "6103909179231256024",
+      "ts": "2026-08-23T12:20:04Z"
+    },
+    {
+      "hash": "12747734838539389144",
+      "ts": "2026-08-23T12:20:04Z"
     }
   ],
   "published": [
@@ -1018,6 +1034,20 @@
       "rubric": "техно",
       "topic": "alexa-spatium-interceptor",
       "ts": "2026-08-22T16:00:06Z"
+    },
+    {
+      "message_id": 7,
+      "story_key": "baltic-poland-blackout-2026",
+      "rubric": "Світ",
+      "topic": "baltic-poland-blackout-2026",
+      "ts": "2026-08-23T11:54:05Z"
+    },
+    {
+      "message_id": 6,
+      "story_key": "ukraine-import-2025",
+      "rubric": "економіка",
+      "topic": "ukraine-import-2025",
+      "ts": "2026-08-23T11:52:58Z"
     }
   ],
   "stats": [
@@ -1048,6 +1078,34 @@
       "decision": "pub",
       "ts": "2026-08-22T16:00:06Z",
       "draft_id": "6a1fa51f"
+    },
+    {
+      "score": 9,
+      "rubric": "ринки",
+      "decision": "rej",
+      "ts": "2026-08-23T11:52:47Z",
+      "draft_id": "3452c539"
+    },
+    {
+      "score": 8,
+      "rubric": "крипта",
+      "decision": "rej",
+      "ts": "2026-08-23T11:53:46Z",
+      "draft_id": "902b7d3f"
+    },
+    {
+      "score": 7,
+      "rubric": "Світ",
+      "decision": "pub",
+      "ts": "2026-08-23T11:54:05Z",
+      "draft_id": "c184fe1a"
+    },
+    {
+      "score": 8,
+      "rubric": "економіка",
+      "decision": "pub",
+      "ts": "2026-08-23T11:52:58Z",
+      "draft_id": "f6408085"
     }
   ],
   "dead_sources": {},

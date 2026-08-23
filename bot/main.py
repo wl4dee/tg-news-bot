@@ -130,22 +130,31 @@ def rank(item: dict) -> float:
     return weight * 10 + freshness
 
 
-def pick_candidates(items: list[dict], limit: int) -> list[dict]:
+def pick_candidates(items: list[dict], limit: int,
+                    rubric_limits: dict[str, int] | None = None) -> list[dict]:
     """Відібрати до `limit` кандидатів у модель, розподіляючи по рубриках.
 
-    Round-robin, а не просто топ-N за рангом: інакше крипта, якої найбільше
-    в документі 02, з'їдає всі слоти й решта рубрик не доходить до моделі ніколи.
+    Round-robin, а не просто топ-N за рангом: інакше найбагатша на джерела
+    рубрика з'їдає всі слоти й решта не доходить до моделі ніколи.
+
+    Порядок обходу — за спаданням ліміту рубрики. Ліміт у config/sources.txt
+    і є вираженням пріоритету: Київ там найбільший, бо це головна рубрика
+    каналу. Без цього при чотирьох слотах головна рубрика могла лишитись
+    без жодного, хоча джерел у неї найменше саме тому, що місто вузьке.
     """
     if len(items) <= limit:
         return sorted(items, key=rank, reverse=True)
 
+    limits = rubric_limits or {}
     by_rubric: dict[str, list[dict]] = {}
     for item in sorted(items, key=rank, reverse=True):
         by_rubric.setdefault(item.get("rubric", "?"), []).append(item)
 
+    order = sorted(by_rubric, key=lambda r: (-limits.get(r, 0), r))
+
     picked: list[dict] = []
     while len(picked) < limit and any(by_rubric.values()):
-        for rubric in list(by_rubric):
+        for rubric in order:
             if len(picked) >= limit:
                 break
             queue = by_rubric[rubric]
@@ -265,7 +274,9 @@ def run() -> int:
     fresh = dedupe.filter_new(items, current)
 
     # --- 5. Передфільтр до ліміту кандидатів ---------------------------
-    candidates = retry_items(retries) + pick_candidates(fresh, config["candidate_limit"])
+    candidates = retry_items(retries) + pick_candidates(
+        fresh, config["candidate_limit"], config["rubric_limits"]
+    )
     if not candidates:
         log.info("нових айтемів немає — прогін завершено без чернеток")
         st.prune(current)

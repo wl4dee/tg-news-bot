@@ -1,94 +1,72 @@
 ДЖЕРЕЛА
-Оновлено: 22.08.2026
-Тематика: крипта + світова економіка + техно + Україна/Київ
+Оновлено: 23.08.2026
+Тематика: Київ + Україна + економіка. Світ — лише значущі події.
 
 Бот читає цей файл при кожному запуску.
 Формат рядка:  тип | значення | рубрика | вага
 Рядки з # — коментарі, ігноруються.
 Вага 1-3: 3 = першоджерело, довіряємо; 1 = сигнал, потрібне підтвердження.
-Рубрика йде в хештег поста: #крипта #ринки #техно #Україна #Київ
+Рубрика йде в хештег поста: #Київ #Україна #економіка #світ
 
 Правити можна з телефону через github.com або попросити Claude Code
 (команда /add-source сама перевірить фід перед додаванням).
 
-# ═══════ ТГ-КАНАЛИ (скрап t.me/s/, без логіну) ═══════
-tg | crypto_hd | крипта | 2
-tg | trade_ultra | крипта | 1
-tg | trade001k | крипта | 1
-tg | lachentyt | Україна | 1
-tg | kievreal1 | Київ | 1
+# Крипту прибрано 23.08.2026 разом зі світовим техно — канал змінив тему.
+# Старі джерела лишились в історії git, якщо колись знадобляться назад.
 
-# Приватні інвайт-лінки веб-прев'ю не мають, потрібен Telethon. Відкладено до v2:
-# tg_private | +qzx5UNSknP01Yzhi
-# tg_private | +vMpudn2KPpIxYTAy
-
-# ═══════ ПЕРШОДЖЕРЕЛА (найцінніше — сюди веде лінк у пості) ═══════
-rss | https://www.sec.gov/news/pressreleases.rss | ринки | 3
-rss | https://www.federalreserve.gov/feeds/press_all.xml | ринки | 3
-rss | https://www.ecb.europa.eu/rss/press.html | ринки | 3
-
-# НБУ прибрав RSS повністю (перевірено 22.08.2026, шість варіантів шляху — усі 404).
-# Рішення НБУ приходять через Укрінформ та Інтерфакс нижче.
-# rss | https://bank.gov.ua/ua/news/rss | Україна | 3
-
-# ═══════ КРИПТА ═══════
-rss | https://www.coindesk.com/arc/outboundfeeds/rss/ | крипта | 2
-rss | https://cointelegraph.com/rss | крипта | 2
-rss | https://decrypt.co/feed | крипта | 2
-rss | https://www.theblock.co/rss.xml | крипта | 2
-rss | https://blockworks.co/feed | крипта | 2
-
-# ═══════ ЕКОНОМІКА І РИНКИ ═══════
-rss | https://www.cnbc.com/id/20910258/device/rss/rss.html | ринки | 2
-rss | http://feeds.marketwatch.com/marketwatch/topstories/ | ринки | 2
-rss | https://finance.yahoo.com/news/rssindex | ринки | 1
-
-# ═══════ ТЕХНО ═══════
-rss | https://techcrunch.com/feed/ | техно | 2
-rss | https://www.theverge.com/rss/index.xml | техно | 2
-rss | https://feeds.arstechnica.com/arstechnica/index | техно | 2
-rss | https://hnrss.org/frontpage?points=300 | техно | 1
-rss | https://dev.ua/rss | техно | 2
-rss | https://ain.ua/feed/ | техно | 2
-
-# ═══════ УКРАЇНА ═══════
-rss | https://www.pravda.com.ua/rss/ | Україна | 2
-rss | https://nv.ua/ukr/rss/all.xml | Україна | 2
-rss | https://interfax.com.ua/news/last.rss | Україна | 2
-rss | https://www.ukrinform.ua/rss/block-lastnews | Україна | 3
-rss | https://suspilne.media/rss/all.rss | Україна | 2
-rss | https://censor.net/includes/news_uk.xml | Україна | 2
-rss | https://biz.censor.net/includes/news_uk.xml | Україна | 2
-rss | https://www.radiosvoboda.org/api/zrqiteuuir | Україна | 2
-
-# Прибрані 22.08.2026 — видання зняли RSS (усі віддають 404):
-# rss | https://hromadske.ua/feed | Україна | 2
-# rss | https://forbes.ua/rss | Україна | 2
-# rss | https://kyivindependent.com/feed/ | Україна | 2
-#
-# epravda віддає 200 з домашньої мережі, але стабільно падає з GitHub Actions —
-# схоже, блокує дата-центрові IP. Лишено вимкненим, щоб не смітити в логах.
-# rss | https://www.epravda.com.ua/rss/ | Україна | 2
-
-# ═══════ КИЇВ ═══════
+# ═══════ КИЇВ — головна рубрика ═══════
+tg  | kievreal1 | Київ | 2
+tg  | kievl1ve | Київ | 2
+tg  | vidvidaemokyiv | Київ | 1
 rss | https://news.google.com/rss/search?q=%D0%9A%D0%B8%D1%97%D0%B2&hl=uk&gl=UA&ceid=UA:uk | Київ | 1
 rss | https://news.google.com/rss/search?q=%D0%9A%D0%9C%D0%94%D0%90&hl=uk&gl=UA&ceid=UA:uk | Київ | 1
-# Київських RSS майже не існує — місто закривається через Google News і ТГ-канали.
+# Київських RSS майже не існує — місто закривається через ТГ-канали.
 # Якщо знайдеш робочий фід КМДА чи «Вечірнього Києва» — додай сюди.
 
-# ═══════ ТОЧКОВІ ЗАПИТИ ЧЕРЕЗ GOOGLE NEWS ═══════
-# Безкоштовний спосіб зробити RSS з будь-якої теми або компанії.
-# Шаблон: https://news.google.com/rss/search?q=ЗАПИТ&hl=uk&gl=UA&ceid=UA:uk
-rss | https://news.google.com/rss/search?q=Ethereum+ETF&hl=uk&gl=UA&ceid=UA:uk | крипта | 1
-rss | https://news.google.com/rss/search?q=Binance&hl=uk&gl=UA&ceid=UA:uk | крипта | 1
+# ═══════ УКРАЇНА ═══════
+tg  | ukraina_novosti | Україна | 1
+tg  | lachentyt | Україна | 1
+rss | https://www.ukrinform.ua/rss/block-lastnews | Україна | 3
+rss | https://www.pravda.com.ua/rss/ | Україна | 2
+rss | https://suspilne.media/rss/all.rss | Україна | 2
+rss | https://nv.ua/ukr/rss/all.xml | Україна | 2
+rss | https://interfax.com.ua/news/last.rss | Україна | 2
+rss | https://censor.net/includes/news_uk.xml | Україна | 2
+rss | https://www.radiosvoboda.org/api/zrqiteuuir | Україна | 2
+# Українське техно й бізнес — теж про Україну, окремої рубрики не заводимо.
+rss | https://dev.ua/rss | Україна | 2
+rss | https://ain.ua/feed/ | Україна | 2
+
+# Приватний інвайт-лінк веб-прев'ю не має, потрібен Telethon. Відкладено до v2:
+# tg_private | +vMpudn2KPpIxYTAy
+
+# ═══════ ЕКОНОМІКА ═══════
+rss | https://biz.censor.net/includes/news_uk.xml | економіка | 2
+rss | https://gmk.center/ua/feed/ | економіка | 2
+rss | https://www.sec.gov/news/pressreleases.rss | економіка | 3
+rss | https://www.federalreserve.gov/feeds/press_all.xml | економіка | 3
+rss | https://www.ecb.europa.eu/rss/press.html | економіка | 3
+rss | http://feeds.marketwatch.com/marketwatch/topstories/ | економіка | 1
+
+# НБУ прибрав RSS повністю (перевірено 22.08.2026, шість варіантів шляху — усі 404).
+# Рішення НБУ приходять через Укрінформ та Інтерфакс.
+#
+# epravda віддає 200 з домашньої мережі, але стабільно падає з GitHub Actions —
+# схоже, блокує дата-центрові IP.
+# rss | https://www.epravda.com.ua/rss/ | економіка | 2
+
+# ═══════ СВІТ — тільки значущі події ═══════
+# Вага 1 навмисно: сюди має проходити лише те, що модель оцінить високо
+# попри низьку вагу джерела. Ліміт рубрики теж мінімальний.
+rss | https://www.bbc.com/ukrainian/index.xml | світ | 1
 
 # ═══════ БАЛАНС РУБРИК ═══════
-# Щоб одна тема не топила решту, ліміт постів за прогін по рубриках:
-limit | крипта | 3
-limit | ринки | 2
-limit | техно | 2
+# Щоб одна тема не топила решту, ліміт постів за прогін по рубриках.
+# Київ — головна рубрика каналу, тому найбільший ліміт.
+limit | Київ | 3
 limit | Україна | 3
-limit | Київ | 2
+limit | економіка | 2
+limit | світ | 1
 
 # Скільки постів за прогін усього і скільки айтемів іде в модель.
 #
@@ -105,10 +83,11 @@ limit | _total | 6
 limit | _candidates | 4
 
 # ═══════ ПРИМІТКИ ═══════
-# 1. У Reuters і Bloomberg публічних RSS немає — тільки через Google News.
-# 2. Перед додаванням фіда перевір, що URL віддає 200 і валідний XML.
+# 1. Перед додаванням фіда перевір, що URL віддає 200 і валідний XML.
 #    Фіди мігрують; бот має логувати мертві джерела, а не падати.
-# 3. Twitter/X напряму не тягнемо. Твіти приходять через ТГ-канали.
-# 4. Google News не віддає посилання на першоджерело — тільки редирект через
+# 2. Twitter/X напряму не тягнемо. Твіти приходять через ТГ-канали.
+# 3. Google News не віддає посилання на першоджерело — тільки редирект через
 #    news.google.com, який не розкривається без виконання JS. Тому такі джерела
 #    тримаємо вагою 1 і лише там, де справжнього RSS не існує (Київ).
+# 4. Фото з ТГ-каналів не використовуються: власний CDN Telegram закритий для
+#    сторонніх завантажень. Картинки беруться тільки з RSS.
