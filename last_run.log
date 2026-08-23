@@ -1,10 +1,10 @@
-# прогін 2026-08-22T18:52:29Z — ЗУПИНЕНО: немає конфігу або секретів
+# прогін 2026-08-23T07:06:29Z — ЗУПИНЕНО: немає конфігу або секретів
 # бойовий режим
 
-18:52:29 INFO    bot: === прогін почався ===
-18:52:29 INFO    bot.publish: бот @wl4dee_bot на зв'язку
-18:52:29 INFO    bot.publish: група чернеток: «Чорнетка» (supergroup)
-18:52:29 ERROR   bot: прогін зупинено: Cloudflare не приймає CF_KV_TOKEN: Authentication error
+07:06:29 INFO    bot: === прогін почався ===
+07:06:29 INFO    bot.publish: бот @wl4dee_bot на зв'язку
+07:06:29 INFO    bot.publish: група чернеток: «Чорнетка» (supergroup)
+07:06:29 ERROR   bot: прогін зупинено: Cloudflare не приймає CF_KV_TOKEN: Authentication error
 Це саме токен, а не Global API Key і не Account ID.
 Створити новий: dash.cloudflare.com → іконка профілю →
   My Profile → API Tokens → Create Token →
