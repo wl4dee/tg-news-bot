@@ -1027,6 +1027,22 @@
     {
       "hash": "14481293208439542363",
       "ts": "2026-08-23T14:45:07Z"
+    },
+    {
+      "hash": "88437201628711472",
+      "ts": "2026-08-23T18:54:02Z"
+    },
+    {
+      "hash": "7757945134150776570",
+      "ts": "2026-08-23T18:54:02Z"
+    },
+    {
+      "hash": "11715487875457973575",
+      "ts": "2026-08-23T18:54:02Z"
+    },
+    {
+      "hash": "1452997396447664795",
+      "ts": "2026-08-23T18:54:02Z"
     }
   ],
   "published": [
@@ -1071,6 +1087,20 @@
       "rubric": "Україна",
       "topic": "ukraine-us-weapons-production",
       "ts": "2026-08-23T12:21:12Z"
+    },
+    {
+      "message_id": 9,
+      "story_key": "nbu-money24-ban",
+      "rubric": "економіка",
+      "topic": "nbu-money24-ban",
+      "ts": "2026-08-23T14:45:41Z"
+    },
+    {
+      "message_id": 10,
+      "story_key": "kherson-flag-raising-2026",
+      "rubric": "Україна",
+      "topic": "kherson-flag-raising-2026",
+      "ts": "2026-08-23T14:45:52Z"
     }
   ],
   "stats": [
@@ -1143,6 +1173,20 @@
       "decision": "pub",
       "ts": "2026-08-23T12:21:12Z",
       "draft_id": "f41962cc"
+    },
+    {
+      "score": 8,
+      "rubric": "економіка",
+      "decision": "pub",
+      "ts": "2026-08-23T14:45:41Z",
+      "draft_id": "a516088e"
+    },
+    {
+      "score": 7,
+      "rubric": "Україна",
+      "decision": "pub",
+      "ts": "2026-08-23T14:45:52Z",
+      "draft_id": "d4aa3eb5"
     }
   ],
   "dead_sources": {},
