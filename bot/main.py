@@ -91,6 +91,28 @@ def write_run_log(outcome: str) -> None:
         log.warning("не вдалося записати %s: %s", RUN_LOG_PATH, exc)
 
 
+def alert(exc: Exception) -> None:
+    """Сказати в групу чернеток, що прогін не відбувся.
+
+    Інакше падіння німе: у групі просто тиша, і зрозуміти, що бот зламався,
+    а не що новин не було, можна лише зазирнувши в GitHub. Один прогін
+    у такому стані — це пів дня без каналу.
+
+    Сама розсилка не має права нічого зламати, тому все загорнуте в except.
+    """
+    if DRY_RUN:
+        return
+    try:
+        first_line = str(exc).strip().split("\n")[0][:250]
+        publish.Telegram().notify(
+            "⚠️ <b>Прогін зупинено</b>\n\n"
+            f"{first_line}\n\n"
+            "Подробиці — у файлі <code>last_run.log</code> в репозиторії."
+        )
+    except Exception:  # noqa: BLE001
+        log.warning("не вдалося попередити групу про падіння прогону")
+
+
 def rank(item: dict) -> float:
     """Ранг кандидата: вага джерела важить більше за свіжість.
 
@@ -342,6 +364,7 @@ def main() -> int:
         log.error("прогін зупинено: %s", exc)
         print(f"\n!!! {exc}\n", file=sys.stderr)
         write_run_log("ЗУПИНЕНО: немає конфігу або секретів")
+        alert(exc)
         return 1
     except Exception as exc:  # noqa: BLE001
         # Навіть несподіване падіння має лишити слід у файлі, інакше
