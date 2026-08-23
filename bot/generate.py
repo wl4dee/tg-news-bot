@@ -40,7 +40,7 @@ REQUIRED_ON_PUBLISH = ("score", "story_key", "text", "source_url")
 
 
 def build_prompt(prompt_doc: str, item: dict, recent: list[dict],
-                 is_retry: bool = False) -> str:
+                 is_retry: bool = False, allowed: set[str] | None = None) -> str:
     """Промпт = config/prompt.md як є + сирий айтем + контекст останніх постів.
 
     RECENT_POSTS потрібен рівно для одного: щоб модель зібрала блок «Раніше:»
@@ -78,6 +78,15 @@ def build_prompt(prompt_doc: str, item: dict, recent: list[dict],
             "УВАГА: попередній варіант цього поста редактор відхилив і попросив "
             "переписати. Зроби інакше — інший ракурс, інша структура, інший лід. "
             "Не повторюй попереднє формулювання.",
+        ]
+
+    if allowed:
+        # Список рубрик береться з config/sources.txt, а не з промпта: інакше
+        # він розійдеться з реальністю в ту ж мить, коли додасться джерело.
+        parts += [
+            "",
+            "Дозволені рубрики (інших не існує, вигадувати не можна): "
+            + ", ".join(sorted(allowed)) + ".",
         ]
 
     parts += [
@@ -278,7 +287,8 @@ def parse_response(raw: str) -> dict | None:
     return data
 
 
-def generate(prompt_doc: str, items: list[dict], recent: list[dict]) -> list[dict]:
+def generate(prompt_doc: str, items: list[dict], recent: list[dict],
+             allowed: set[str] | None = None) -> list[dict]:
     """Один виклик моделі на айтем, із паузою під безкоштовний тариф (≈10 RPM)."""
     api_key = env("GEMINI_API_KEY")
     results: list[dict] = []
@@ -295,7 +305,8 @@ def generate(prompt_doc: str, items: list[dict], recent: list[dict]) -> list[dic
         # айтеми після зупинки по квоті лишаються непозначеними й повернуться.
         item["_processed"] = True
 
-        prompt = build_prompt(prompt_doc, item, recent, item.get("is_retry", False))
+        prompt = build_prompt(prompt_doc, item, recent,
+                              item.get("is_retry", False), allowed)
         raw = _call_api(api_key, prompt)
 
         if raw is DAILY_QUOTA_EXHAUSTED:
@@ -318,10 +329,15 @@ def generate(prompt_doc: str, items: list[dict], recent: list[dict]) -> list[dic
             continue
 
         # Рубрика з джерела — основна; модель може її перекрити, якщо новина
-        # насправді про інше. Порожню або невідому рубрику не беремо: за нею
-        # рахуються ліміти, і чужа назва обійшла б баланс рубрик.
-        if not parsed.get("rubric"):
-            parsed["rubric"] = item.get("rubric", "")
+        # насправді про інше. Але тільки на рубрику, яка існує в config/sources.txt:
+        # за рубриками рахуються ліміти й ведеться статистика, тож вигадана
+        # назва («Світ», «економіка») обходить баланс рубрик і засмічує stats.
+        model_rubric = str(parsed.get("rubric") or "").strip()
+        if model_rubric and allowed and model_rubric not in allowed:
+            log.warning("модель вигадала рубрику «%s» — беру рубрику джерела «%s»",
+                        model_rubric, item.get("rubric", ""))
+            model_rubric = ""
+        parsed["rubric"] = model_rubric or item.get("rubric", "")
 
         parsed["_item"] = item
         results.append(parsed)

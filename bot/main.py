@@ -274,7 +274,8 @@ def run() -> int:
 
     # --- 6. Генерація ---------------------------------------------------
     recent = st.recent_published(current, limit=30)
-    posts = generate.generate(prompt_doc, candidates, recent)
+    allowed_rubrics = {s["rubric"] for s in config["sources"]} | set(config["rubric_limits"])
+    posts = generate.generate(prompt_doc, candidates, recent, allowed_rubrics)
 
     # Баченими вважаємо лише те, що модель реально подивилась. Айтеми, до яких
     # черга не дійшла (скінчилась денна квота), лишаються непозначеними
