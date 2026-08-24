@@ -1,51 +1,51 @@
-# прогін 2026-08-24T10:58:14Z — завершено
+# прогін 2026-08-24T15:05:26Z — завершено
 # бойовий режим
 
-10:57:20 INFO    bot: === прогін почався ===
-10:57:21 INFO    bot.publish: бот @wl4dee_bot на зв'язку
-10:57:21 INFO    bot.publish: група чернеток: «Чорнетка» (supergroup)
-10:57:22 INFO    bot.kv: KV: злито 2 нових рішень із 2 ключів log, запитів на перегенерацію: 0
-10:57:22 INFO    bot.kv: KV: видалено 4 оброблених ключів
-10:57:22 INFO    bot.docs: «промпт стилю»: config/prompt.md, 6810 символів
-10:57:22 INFO    bot.docs: «джерела»: config/sources.txt, 4255 символів
-10:57:22 INFO    bot.docs: джерела: 23 (tg=5, rss=18), рубрик з лімітами: 4, усього за прогін: 6, кандидатів у модель: 4, пропущено рядків: 1
-10:57:23 INFO    bot.collect:   tg   Київ        9 айтемів  kievreal1
-10:57:23 INFO    bot.collect:   tg   Київ        0 айтемів  kievl1ve
-10:57:24 INFO    bot.collect:   tg   Київ        4 айтемів  vidvidaemokyiv
-10:57:25 INFO    bot.collect:   rss  Київ       15 айтемів  https://news.google.com/rss/search?q=%D0%9A%D0%B8%D1%97%D0%B2&hl=uk&gl=UA&ceid=UA:uk
-10:57:25 INFO    bot.collect:   rss  Київ        8 айтемів  https://news.google.com/rss/search?q=%D0%9A%D0%9C%D0%94%D0%90&hl=uk&gl=UA&ceid=UA:uk
-10:57:25 INFO    bot.collect:   tg   Україна    12 айтемів  ukraina_novosti
-10:57:26 INFO    bot.collect:   tg   Україна    10 айтемів  lachentyt
-10:57:27 INFO    bot.collect:   rss  Україна    15 айтемів  https://www.ukrinform.ua/rss/block-lastnews
-10:57:27 INFO    bot.collect:   rss  Україна    15 айтемів  https://www.pravda.com.ua/rss/
-10:57:28 INFO    bot.collect:   rss  Україна    15 айтемів  https://suspilne.media/rss/all.rss
-10:57:28 INFO    bot.collect:   rss  Україна    15 айтемів  https://nv.ua/ukr/rss/all.xml
-10:57:28 INFO    bot.collect:   rss  Україна    15 айтемів  https://interfax.com.ua/news/last.rss
-10:57:29 INFO    bot.collect:   rss  Україна    15 айтемів  https://censor.net/includes/news_uk.xml
-10:57:29 INFO    bot.collect:   rss  Україна    15 айтемів  https://www.radiosvoboda.org/api/zrqiteuuir
-10:57:30 INFO    bot.collect:   rss  Україна    14 айтемів  https://dev.ua/rss
-10:57:31 INFO    bot.collect:   rss  Україна     4 айтемів  https://ain.ua/feed/
-10:57:31 INFO    bot.collect:   rss  економіка  15 айтемів  https://biz.censor.net/includes/news_uk.xml
-10:57:31 INFO    bot.collect:   rss  економіка   1 айтемів  https://gmk.center/ua/feed/
-10:57:31 INFO    bot.collect:   rss  економіка   0 айтемів  https://www.sec.gov/news/pressreleases.rss
-10:57:32 INFO    bot.collect:   rss  економіка   0 айтемів  https://www.federalreserve.gov/feeds/press_all.xml
-10:57:32 INFO    bot.collect:   rss  економіка   1 айтемів  https://www.ecb.europa.eu/rss/press.html
-10:57:32 INFO    bot.collect:   rss  економіка  10 айтемів  http://feeds.marketwatch.com/marketwatch/topstories/
-10:57:33 INFO    bot.collect:   rss  світ        9 айтемів  https://www.bbc.com/ukrainian/index.xml
-10:57:33 INFO    bot.collect: зібрано 217 айтемів із 23 джерел (впало 0, на лаві 0)
-10:57:33 INFO    bot.dedupe: дедуп: 217 на вході → 206 нових (відсіяно: 8 як бачені за 48 год, 3 як дублі всередині прогону)
-10:57:33 INFO    bot: передфільтр: 206 айтемів → 4 кандидатів у модель, по рубриках: {'Київ': 1, 'Україна': 1, 'економіка': 1, 'світ': 1}
-10:57:33 INFO    bot.generate: [1/4] Київ | В Раді зареєстрували законопроєкт, згідно якого чоловікам, у яких наро
-10:57:35 INFO    bot.generate:     → score 7, рубрика Україна, шаблон Б
-10:57:42 INFO    bot.generate: [2/4] Україна | Генштаб підтвердив, що на аеродромі в Анапі пошкоджені винищувачі Су-3
-10:57:44 INFO    bot.generate:     → score 8, рубрика Україна, шаблон В
-10:57:51 INFO    bot.generate: [3/4] економіка | Пасажиропотік через західний кордон України досяг рекорду від початку 
-10:57:53 INFO    bot.generate:     → score 7, рубрика економіка, шаблон Б
-10:58:00 INFO    bot.generate: [4/4] світ | SCALP. Що відомо про далекобійні ракети, технології виробництва яких У
-10:58:03 INFO    bot.generate:     → score 8, рубрика Україна, шаблон В
-10:58:03 INFO    bot.generate: модель: 4 айтемів → 4 готових постів (відмов: 0, зіпсованих відповідей: 0)
-10:58:03 INFO    bot: ліміти: 4 постів → 4 чернеток (відсіяно 0 по лімітах рубрик, 0 по загальному ліміту 6). Розподіл: {'Україна': 3, 'економіка': 1}
-10:58:14 INFO    bot: надіслано чернеток: 4
-10:58:14 INFO    bot.state: очищення: seen 197→113, published 11→11, stats 15 (не чиститься)
-10:58:14 INFO    bot.state: state.json записано: seen=113 published=11 stats=15 dead=0
-10:58:14 INFO    bot: === прогін завершено ===
+15:04:47 INFO    bot: === прогін почався ===
+15:04:48 INFO    bot.publish: бот @wl4dee_bot на зв'язку
+15:04:48 INFO    bot.publish: група чернеток: «Чорнетка» (supergroup)
+15:04:49 INFO    bot.kv: KV: злито 4 нових рішень із 4 ключів log, запитів на перегенерацію: 0
+15:04:49 INFO    bot.kv: KV: видалено 8 оброблених ключів
+15:04:49 INFO    bot.docs: «промпт стилю»: config/prompt.md, 6810 символів
+15:04:49 INFO    bot.docs: «джерела»: config/sources.txt, 4255 символів
+15:04:49 INFO    bot.docs: джерела: 23 (tg=5, rss=18), рубрик з лімітами: 4, усього за прогін: 6, кандидатів у модель: 4, пропущено рядків: 1
+15:04:50 INFO    bot.collect:   tg   Київ       10 айтемів  kievreal1
+15:04:51 INFO    bot.collect:   tg   Київ        0 айтемів  kievl1ve
+15:04:51 INFO    bot.collect:   tg   Київ        6 айтемів  vidvidaemokyiv
+15:04:52 INFO    bot.collect:   rss  Київ       15 айтемів  https://news.google.com/rss/search?q=%D0%9A%D0%B8%D1%97%D0%B2&hl=uk&gl=UA&ceid=UA:uk
+15:04:52 INFO    bot.collect:   rss  Київ       11 айтемів  https://news.google.com/rss/search?q=%D0%9A%D0%9C%D0%94%D0%90&hl=uk&gl=UA&ceid=UA:uk
+15:04:53 INFO    bot.collect:   tg   Україна    12 айтемів  ukraina_novosti
+15:04:53 INFO    bot.collect:   tg   Україна    11 айтемів  lachentyt
+15:04:54 INFO    bot.collect:   rss  Україна    15 айтемів  https://www.ukrinform.ua/rss/block-lastnews
+15:04:54 INFO    bot.collect:   rss  Україна    15 айтемів  https://www.pravda.com.ua/rss/
+15:04:55 INFO    bot.collect:   rss  Україна    15 айтемів  https://suspilne.media/rss/all.rss
+15:04:55 INFO    bot.collect:   rss  Україна    15 айтемів  https://nv.ua/ukr/rss/all.xml
+15:04:55 INFO    bot.collect:   rss  Україна    15 айтемів  https://interfax.com.ua/news/last.rss
+15:04:56 INFO    bot.collect:   rss  Україна    15 айтемів  https://censor.net/includes/news_uk.xml
+15:04:56 INFO    bot.collect:   rss  Україна    15 айтемів  https://www.radiosvoboda.org/api/zrqiteuuir
+15:04:57 INFO    bot.collect:   rss  Україна    15 айтемів  https://dev.ua/rss
+15:04:58 INFO    bot.collect:   rss  Україна     6 айтемів  https://ain.ua/feed/
+15:04:58 INFO    bot.collect:   rss  економіка  15 айтемів  https://biz.censor.net/includes/news_uk.xml
+15:04:58 INFO    bot.collect:   rss  економіка   2 айтемів  https://gmk.center/ua/feed/
+15:04:58 INFO    bot.collect:   rss  економіка   0 айтемів  https://www.sec.gov/news/pressreleases.rss
+15:04:58 INFO    bot.collect:   rss  економіка   0 айтемів  https://www.federalreserve.gov/feeds/press_all.xml
+15:04:59 INFO    bot.collect:   rss  економіка   1 айтемів  https://www.ecb.europa.eu/rss/press.html
+15:04:59 INFO    bot.collect:   rss  економіка  10 айтемів  http://feeds.marketwatch.com/marketwatch/topstories/
+15:04:59 INFO    bot.collect:   rss  світ       10 айтемів  https://www.bbc.com/ukrainian/index.xml
+15:04:59 INFO    bot.collect: зібрано 229 айтемів із 23 джерел (впало 0, на лаві 0)
+15:04:59 INFO    bot.dedupe: дедуп: 229 на вході → 218 нових (відсіяно: 8 як бачені за 48 год, 3 як дублі всередині прогону)
+15:04:59 INFO    bot: передфільтр: 218 айтемів → 4 кандидатів у модель, по рубриках: {'Київ': 1, 'Україна': 1, 'економіка': 1, 'світ': 1}
+15:04:59 INFO    bot.generate: [1/4] Київ | На Звіринецькій ДТП за участі маршрутки та легковика, попередньо, без 
+15:05:00 INFO    bot.generate: модель відмовила: Подія має низьку значущість (оцінка < 6): локальна ДТП без постраждалих, яка не впливає суттєво на життєдіяльність міста чи транспортну систему загалом.
+15:05:07 INFO    bot.generate: [2/4] Україна | Синоптики прогнозують цього тижня погоду без опадів і до +30°
+15:05:09 INFO    bot.generate: модель відмовила: Новина про погоду (антициклон та підвищення температури до +30°) є загальною, не містить конкретних надзвичайних подій, не змінює правила гри чи фінансовий стан читачів, тому оцінюється нижче 6 балів 
+15:05:16 INFO    bot.generate: [3/4] економіка | Індія повертається на світовий ринок пшениці після чотирирічної заборо
+15:05:18 INFO    bot.generate:     → score 7, рубрика економіка, шаблон Б
+15:05:25 INFO    bot.generate: [4/4] світ | "Будинок жахів". Як мати, бабуся і вітчим роками знущалися з дітей
+15:05:26 INFO    bot.generate: модель відмовила: Новина стосується кримінальної події у Шотландії, яка не має жодного зв'язку з Україною, Києвом чи фінансовим станом українських читачів. Оцінка значущості за критеріями каналу менше 6.
+15:05:26 INFO    bot.generate: модель: 4 айтемів → 1 готових постів (відмов: 3, зіпсованих відповідей: 0)
+15:05:26 INFO    bot: ліміти: 1 постів → 1 чернеток (відсіяно 0 по лімітах рубрик, 0 по загальному ліміту 6). Розподіл: {'економіка': 1}
+15:05:26 INFO    bot: надіслано чернеток: 1
+15:05:26 INFO    bot.state: очищення: seen 117→29, published 13→13, stats 19 (не чиститься)
+15:05:26 INFO    bot.state: state.json записано: seen=29 published=13 stats=19 dead=0
+15:05:26 INFO    bot: === прогін завершено ===
